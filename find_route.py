@@ -1,8 +1,8 @@
 import osmnx as ox
 import networkx as nx
 import folium
-import tkinter as tk
-from tkinter import simpledialog, messagebox
+from streamlit_folium import st_folium
+import streamlit as st
 
 # Hàm tìm đường và hiển thị trên bản đồ
 def find_route_on_map(start_location, end_location):
@@ -11,8 +11,8 @@ def find_route_on_map(start_location, end_location):
         start_point = ox.geocode(start_location)
         end_point = ox.geocode(end_location)
     except Exception as e:
-        messagebox.showerror("Lỗi", f"Không tìm thấy địa điểm: {e}")
-        return
+        st.error(f"Không tìm thấy địa điểm: {e}")
+        return None
 
     # Tải bản đồ Việt Nam
     G = ox.graph_from_place("Vietnam", network_type="drive")
@@ -38,26 +38,18 @@ def find_route_on_map(start_location, end_location):
     folium.Marker(location=start_point, popup="Điểm bắt đầu", icon=folium.Icon(color="green")).add_to(route_map)
     folium.Marker(location=end_point, popup="Điểm kết thúc", icon=folium.Icon(color="red")).add_to(route_map)
 
-    # Lưu bản đồ thành file HTML
-    route_map.save("route_map.html")
-    messagebox.showinfo("Thành công", "Bản đồ đã được tạo! Mở file 'route_map.html' để xem.")
+    return route_map
 
-# Giao diện người dùng với Tkinter
-def main():
-    root = tk.Tk()
-    root.withdraw()  # Ẩn cửa sổ chính
+# Giao diện người dùng với Streamlit
+st.title("Tìm Đường và Hiển Thị Bản Đồ")
 
-    try:
-        start_location = simpledialog.askstring("Địa điểm", "Nhập địa chỉ hoặc tên nơi bắt đầu:")
-        end_location = simpledialog.askstring("Địa điểm", "Nhập địa chỉ hoặc tên nơi kết thúc:")
+start_location = st.text_input("Nhập địa chỉ hoặc tên nơi bắt đầu:")
+end_location = st.text_input("Nhập địa chỉ hoặc tên nơi kết thúc:")
 
-        if not start_location or not end_location:
-            messagebox.showwarning("Cảnh báo", "Bạn phải nhập cả hai địa điểm!")
-            return
-
-        find_route_on_map(start_location, end_location)
-    except Exception as e:
-        messagebox.showerror("Lỗi", f"Đã xảy ra lỗi: {e}")
-
-if __name__ == "__main__":
-    main()
+if st.button("Tìm Đường"):
+    if not start_location or not end_location:
+        st.warning("Bạn phải nhập cả hai địa điểm!")
+    else:
+        route_map = find_route_on_map(start_location, end_location)
+        if route_map:
+            st_folium(route_map, width=700, height=500)
