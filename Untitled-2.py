@@ -1,4 +1,5 @@
 #Bài 1: Tô màu bản đồ nước Úc
+!pip install --upgrade pip
 from __future__ import print_function
 from simpleai.search import CspProblem, backtrack
 
