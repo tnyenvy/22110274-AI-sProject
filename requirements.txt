@@ -5,4 +5,3 @@ osmnx
 networkx
 folium
 simpleai
-pygraphviz
