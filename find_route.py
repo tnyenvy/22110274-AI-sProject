@@ -8,9 +8,9 @@ from streamlit.components.v1 import html
 @st.cache_data
 def load_map():
     try:
-        # Tải bản đồ của khu vực Thành phố Hồ Chí Minh
-        G = ox.graph_from_place("Ho Chi Minh City, Vietnam", network_type="drive")
-        st.write("Bản đồ Thành phố Hồ Chí Minh đã được tải thành công.")
+        # Tải bản đồ của khu vực Thành phố Thủ Đức
+        G = ox.graph_from_place("Thu Duc, Ho Chi Minh City, Vietnam", network_type="drive")
+        st.write("Bản đồ Thành phố Thủ Đức đã được tải thành công.")
         return G
     except Exception as e:
         st.error(f"Lỗi tải bản đồ: {e}")
