@@ -37,12 +37,20 @@ def find_route_on_map(start_location, end_location, G):
         # Chuyển đổi đường đi thành danh sách tọa độ
         route_coords = [(G.nodes[node]['y'], G.nodes[node]['x']) for node in route]
 
-        # Tạo bản đồ
+        # Tạo bản đồ và điều chỉnh độ zoom để hiển thị rõ đường đi
         map_center = [(start_point[0] + end_point[0]) / 2, (start_point[1] + end_point[1]) / 2]
-        route_map = folium.Map(location=map_center, zoom_start=12)
+        route_map = folium.Map(location=map_center, zoom_start=14)
+
+        # Thêm tuyến đường lên bản đồ
         folium.PolyLine(route_coords, color="blue", weight=5, opacity=0.8).add_to(route_map)
+
+        # Đánh dấu điểm bắt đầu và kết thúc
         folium.Marker(location=start_point, popup="Điểm bắt đầu", icon=folium.Icon(color="green")).add_to(route_map)
         folium.Marker(location=end_point, popup="Điểm kết thúc", icon=folium.Icon(color="red")).add_to(route_map)
+
+        # Tùy chọn: Thêm điểm đánh dấu dọc đường đi (ví dụ: các điểm giao cắt)
+        for coord in route_coords[::int(len(route_coords)/10)]:  # Đánh dấu mỗi 10% đoạn đường
+            folium.Marker(location=coord, icon=folium.Icon(color="blue", icon="info-sign")).add_to(route_map)
 
         return route_map
     except Exception as e:
