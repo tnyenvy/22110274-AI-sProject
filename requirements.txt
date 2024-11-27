@@ -7,3 +7,4 @@ folium
 simpleai
 streamlit_folium
 scikit-learn
+math
