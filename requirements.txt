@@ -5,3 +5,4 @@ osmnx
 networkx
 folium
 simpleai
+streamlit_folium
