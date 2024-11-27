@@ -29,5 +29,5 @@ if __name__=='__main__':
     ]
 
     problem = CspProblem(names, domain, constraints)
-    output = backtrack(problem)
-    print(output)
+    # output = backtrack(problem)
+    print(backtrack(problem))
