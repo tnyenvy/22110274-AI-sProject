@@ -3,6 +3,31 @@ import networkx as nx
 import folium
 import streamlit as st
 from streamlit.components.v1 import html
+from simpleai.search import SearchProblem
+
+# Class định nghĩa vấn đề tìm đường dựa trên SimpleAI
+class RouteFindingProblem(SearchProblem):
+    def __init__(self, G, start_node, end_node):
+        self.G = G
+        self.start_node = start_node
+        self.end_node = end_node
+        super().__init__(initial_state=start_node)
+
+    def actions(self, state):
+        # Trả về các nút lân cận của state hiện tại
+        return list(self.G[state].keys())
+
+    def result(self, state, action):
+        # Di chuyển từ state hiện tại sang action (nút kế tiếp)
+        return action
+
+    def is_goal(self, state):
+        # Kiểm tra xem state có phải là nút đích không
+        return state == self.end_node
+
+    def cost(self, state1, action, state2):
+        # Trả về độ dài (chi phí) giữa hai nút
+        return self.G[state1][state2][0]['length']
 
 # Hàm tải bản đồ chỉ một lần và lưu trữ cho việc sử dụng lại
 @st.cache_data
@@ -31,11 +56,14 @@ def find_route_on_map(start_location, end_location, G):
         start_node = ox.distance.nearest_nodes(G, start_point[1], start_point[0])
         end_node = ox.distance.nearest_nodes(G, end_point[1], end_point[0])
 
-        # Tính toán đường đi ngắn nhất
-        route = nx.shortest_path(G, start_node, end_node, weight="length")
+        # Tạo vấn đề tìm đường
+        problem = RouteFindingProblem(G, start_node, end_node)
 
+        # Giải bài toán tìm đường ngắn nhất (tương tự như A* hoặc BFS)
+        result = nx.shortest_path(G, start_node, end_node, weight="length")
+        
         # Chuyển đổi đường đi thành danh sách tọa độ
-        route_coords = [(G.nodes[node]['y'], G.nodes[node]['x']) for node in route]
+        route_coords = [(G.nodes[node]['y'], G.nodes[node]['x']) for node in result]
 
         # Tạo bản đồ và điều chỉnh độ zoom để hiển thị rõ đường đi
         map_center = [(start_point[0] + end_point[0]) / 2, (start_point[1] + end_point[1]) / 2]
